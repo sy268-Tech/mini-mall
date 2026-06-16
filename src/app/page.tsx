@@ -1,10 +1,14 @@
 // 首页 — Hero 横幅 + 精选商品
 import Image from "next/image";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 import { getFeaturedProducts } from "@/services/products";
 import { ProductCard } from "@/features/products/components/product-card";
+import { AuthNav } from "@/features/auth/components/auth-nav";
 
 export default async function HomePage() {
+  const session = await auth();
+  const user = session?.user ?? null;
   const featured = await getFeaturedProducts();
 
   return (
@@ -19,15 +23,7 @@ export default async function HomePage() {
             <Link href="/products" className="text-gray-600 hover:text-gray-900">
               全部商品
             </Link>
-            <Link href="/login" className="text-gray-600 hover:text-gray-900">
-              登录
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-button bg-primary-600 px-3 py-1.5 text-white hover:bg-primary-700"
-            >
-              注册
-            </Link>
+            <AuthNav user={user} />
           </nav>
         </div>
       </header>

@@ -20,6 +20,7 @@ async function main() {
   const hashedPassword = await bcrypt.hash("admin123", 10);
   const hashedPassword2 = await bcrypt.hash("customer123", 10);
   const hashedPassword3 = await bcrypt.hash("vip123", 10);
+  const hashedPassword4 = await bcrypt.hash("123456", 10);
 
   // ── Users ────────────────────────────────────────────
   const admin = await prisma.user.create({
@@ -27,6 +28,17 @@ async function main() {
       name: "管理员",
       email: "admin@minimall.com",
       password: hashedPassword,
+      role: "ADMIN",
+      tier: "NONE",
+    },
+  });
+
+  // admin / 123456 — 用户名登录
+  await prisma.user.create({
+    data: {
+      name: "admin",
+      email: "admin@mini-mall.com",
+      password: hashedPassword4,
       role: "ADMIN",
       tier: "NONE",
     },
