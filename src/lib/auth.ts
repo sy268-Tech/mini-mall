@@ -10,26 +10,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
-      // 登录表单字段
+      // 登录表单字段 — 支持用户名或邮箱
       credentials: {
-        email: { label: "邮箱", type: "email" },
+        email: { label: "用户名或邮箱", type: "text" },
         password: { label: "密码", type: "password" },
       },
       async authorize(credentials) {
-        // Zod 校验输入
+        // 校验输入
         const parsed = z
           .object({
-            email: z.string().email("邮箱格式不正确"),
+            email: z.string().min(1, "请输入用户名或邮箱"),
             password: z.string().min(1, "请输入密码"),
           })
           .safeParse(credentials);
 
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
+        const { email: loginId, password } = parsed.data;
 
-        // 查找用户
-        const user = await prisma.user.findUnique({ where: { email } });
+        // 查找用户：先按邮箱查，再按用户名查
+        const user =
+          (await prisma.user.findUnique({ where: { email: loginId } })) ??
+          (await prisma.user.findFirst({ where: { name: loginId, password: { not: null } } }));
+
         if (!user?.password) return null;
 
         // 验证密码
