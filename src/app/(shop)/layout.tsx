@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { AuthNav } from "@/features/auth/components/auth-nav";
 import { CartSidebar } from "@/features/cart/components/cart-sidebar";
+import { MobileMenu } from "@/components/ui/mobile-menu";
 
 export default async function ShopLayout({
   children,
@@ -57,7 +58,10 @@ export default async function ShopLayout({
           {/* 右侧操作区 */}
           <div className="flex items-center gap-3">
             <CartSidebar />
-            <AuthNav user={user ?? null} />
+            <MobileMenu user={user ?? null} />
+            <div className="hidden md:block">
+              <AuthNav user={user ?? null} />
+            </div>
           </div>
         </div>
       </header>
