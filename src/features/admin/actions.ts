@@ -25,7 +25,10 @@ const productSchema = z.object({
   description: z.string().min(1, "请输入商品描述"),
   price: z.coerce.number().int().min(1, "价格需大于 0"),
   compareAtPrice: z.coerce.number().int().optional(),
-  images: z.string().default("[]"),
+  images: z.string().default("[]").refine(
+    (v) => { try { JSON.parse(v); return Array.isArray(JSON.parse(v)); } catch { return false; } },
+    "图片格式不正确，请使用 JSON 数组"
+  ),
   categoryId: z.string().min(1, "请选择分类"),
   inventory: z.coerce.number().int().min(0).default(0),
   isActive: z.coerce.boolean().default(true),
@@ -93,7 +96,32 @@ export async function updateProduct(
 export async function deleteProduct(id: string) {
   "use server";
   await requireAdmin();
-  await prisma.product.delete({ where: { id } });
+
+  try {
+    // 先检查是否有关联数据（购物车项或订单项）
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: { _count: { select: { cartItems: true, orderItems: true } } },
+    });
+    if (!product) return;
+
+    if (product._count.cartItems > 0 || product._count.orderItems > 0) {
+      // 有关联数据时改为软删除（下架），避免外键约束报错
+      await prisma.product.update({
+        where: { id },
+        data: { isActive: false },
+      });
+    } else {
+      await prisma.product.delete({ where: { id } });
+    }
+  } catch {
+    // 兜底：删除失败则下架
+    await prisma.product.update({
+      where: { id },
+      data: { isActive: false },
+    }).catch(() => {});
+  }
+
   revalidatePath("/admin/products");
 }
 

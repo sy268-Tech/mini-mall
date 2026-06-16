@@ -1,41 +1,7 @@
 // 后台分类管理页 — 创建 + 列表 + 删除
-import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
 import { prisma } from "@/lib/prisma";
-import { createCategory, deleteCategory } from "@/features/admin/actions";
-
-// 创建分类表单
-function CreateForm() {
-  const [state, action] = useActionState(createCategory, null);
-  const { pending } = useFormStatus();
-
-  return (
-    <form action={action} className="flex items-end gap-3">
-      <input
-        name="name"
-        placeholder="分类名称"
-        required
-        className="rounded-button border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-hidden"
-      />
-      <input
-        name="slug"
-        placeholder="URL 标识"
-        required
-        className="rounded-button border border-gray-300 px-3 py-2 text-sm font-mono focus:border-primary-500 focus:outline-hidden"
-      />
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-button bg-primary-600 px-4 py-2 text-sm text-white hover:bg-primary-700 disabled:opacity-50"
-      >
-        {pending ? "创建中..." : "新增分类"}
-      </button>
-      {state?.error && (
-        <span className="text-sm text-danger-500">{state.error}</span>
-      )}
-    </form>
-  );
-}
+import { deleteCategory } from "@/features/admin/actions";
+import { CreateCategoryForm } from "@/features/admin/components/create-category-form";
 
 export default async function AdminCategoriesPage() {
   const categories = await prisma.category.findMany({
@@ -47,9 +13,9 @@ export default async function AdminCategoriesPage() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-6">分类管理</h1>
 
-      {/* 新建分类 */}
+      {/* 新建分类（客户端表单） */}
       <div className="rounded-card border bg-white p-4 mb-6">
-        <CreateForm />
+        <CreateCategoryForm />
       </div>
 
       {/* 分类列表 */}
