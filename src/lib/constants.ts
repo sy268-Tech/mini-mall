@@ -1,6 +1,6 @@
 // 全局常量定义
 // 分页
-export const ITEMS_PER_PAGE = 12;
+export const ITEMS_PER_PAGE = 9;
 
 // 运费（分）
 export const FREE_SHIPPING_THRESHOLD = 5000_00; // ¥5,000 免运费
