@@ -38,7 +38,8 @@ export default async function HomePage() {
           src="/next.svg"
           alt="Next.js"
           width={80}
-          height={17}
+          height={16}
+          style={{ height: "auto" }}
           className="mx-auto mb-4 invert"
         />
         <h1 className="text-4xl font-bold">欢迎来到 Mini Mall</h1>
@@ -69,7 +70,7 @@ export default async function HomePage() {
       <footer className="border-t py-6 text-center text-sm text-gray-400">
         <div className="flex items-center justify-center gap-2">
           <span>Powered by</span>
-          <Image src="/next.svg" alt="Next.js" width={60} height={12} className="dark:invert" />
+          <Image src="/next.svg" alt="Next.js" width={60} height={12} style={{ height: "auto" }} className="dark:invert" />
         </div>
       </footer>
     </div>
